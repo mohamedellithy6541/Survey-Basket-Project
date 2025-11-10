@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using SurveyBasket.Api.Services;
 
 namespace SurveyBasket
 {
@@ -13,19 +14,20 @@ namespace SurveyBasket
             // Add services
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("MohamedDoc", new OpenApiInfo { Title = "SurveyBasket API", Version = "v1" });
-            });
+
+            // service 
+            builder.Services.AddSingleton<IPollService, PollService>();
+
+            builder.Services.AddSwaggerGen();
+
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI(o =>
-                {
-                    o.SwaggerEndpoint("/swagger/MohamedDoc/swagger.json", "SurveyBasket API V1");
-                });
+                app.UseSwaggerUI(options =>
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "V1"));
+
             }
 
             app.UseHttpsRedirection();
