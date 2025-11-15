@@ -1,7 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Http.HttpResults;
-
-namespace SurveyBasket.Api.Services
+﻿namespace SurveyBasket.Api.Services
 {
     public class PollService : IPollService
     {

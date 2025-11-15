@@ -1,4 +1,7 @@
 ﻿
+using SurveyBasket.Api.Contract.Request;
+using SurveyBasket.Api.Mapping;
+
 namespace SurveyBasket.Api.Controllers
 {
     [Route("api/[controller]")]
@@ -12,26 +15,27 @@ namespace SurveyBasket.Api.Controllers
         [HttpGet("getAll")]
         public IActionResult GetAll()
         {
-            return Ok(_pollService.GetAll());
+            var polls = _pollService.GetAll();
+            return Ok(polls.MapToPollResponseList());
         }
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
             var poll = _pollService.GetById(id);
 
-            return poll is null ? NotFound() : Ok(poll);
+            return poll is null ? base.NotFound() : base.Ok((object)poll.MapToPollResponse());
         }
         [HttpPost]
-        public IActionResult Add(Poll poll)
+        public IActionResult Add(CreatePollRequest poll)
         {
-            var addedpoll = _pollService.AddPoll(poll);
+            var addedpoll = _pollService.AddPoll(poll.MapToPoll());
             return CreatedAtAction(nameof(GetById), new { id = addedpoll.id }, addedpoll);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Poll poll)
+        public IActionResult Update(int id, [FromBody] CreatePollRequest poll)
         {
-            var isUpdated = _pollService.upadate(id, poll);
+            var isUpdated = _pollService.upadate(id, poll.MapToPoll());
 
             if (!isUpdated) NotFound();
 
@@ -46,7 +50,7 @@ namespace SurveyBasket.Api.Controllers
 
             if (!isDeleted)
                 return NotFound();
-         
+
             return NoContent();
 
         }
