@@ -1,7 +1,9 @@
-using Microsoft.AspNetCore.Builder;
+
+using Mapster;
+using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
-using SurveyBasket.Api.Services;
+using SurveyBasket.Api.Mapping;
+using System.Reflection;
 
 namespace SurveyBasket
 {
@@ -15,7 +17,11 @@ namespace SurveyBasket
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
 
-            // service 
+            TypeAdapterConfig mappingConfiguration = TypeAdapterConfig.GlobalSettings;
+            mappingConfiguration.Scan(Assembly.GetExecutingAssembly());
+            
+            builder.Services.AddSingleton<IMapper>(new Mapper(mappingConfiguration));
+
             builder.Services.AddSingleton<IPollService, PollService>();
 
             builder.Services.AddSwaggerGen();

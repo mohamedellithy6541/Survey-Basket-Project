@@ -1,37 +1,46 @@
 ﻿
+using Mapster;
+using MapsterMapper;
+using SurveyBasket.Api.Contracts;
+
 namespace SurveyBasket.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PollsController(IPollService pollService) : ControllerBase
+    public class PollsController(IPollService pollService, IMapper mapper) : ControllerBase
     {
         #region property
         private readonly IPollService _pollService = pollService;
+        private readonly IMapper _mapper = mapper;
         #endregion
 
         [HttpGet("getAll")]
         public IActionResult GetAll()
         {
-            return Ok(_pollService.GetAll());
+            var polls = _pollService.GetAll();
+            var response = polls.Adapt<PollResponse>();
+            return Ok(response);
         }
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public IActionResult Get(int id)
         {
             var poll = _pollService.GetById(id);
 
-            return poll is null ? NotFound() : Ok(poll);
+            var response = poll.Adapt<PollResponse>();
+
+            return response is null ? NotFound() : Ok(response);
         }
         [HttpPost]
         public IActionResult Add(Poll poll)
         {
             var addedpoll = _pollService.AddPoll(poll);
-            return CreatedAtAction(nameof(GetById), new { id = addedpoll.id }, addedpoll);
+            return CreatedAtAction(nameof(Get), new { id = addedpoll.Id }, addedpoll);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Poll poll)
+        public IActionResult Update(int id, [FromBody] PollRequest request)
         {
-            var isUpdated = _pollService.upadate(id, poll);
+            var isUpdated = _pollService.Update(id, request.Adapt<Poll>());
 
             if (!isUpdated) NotFound();
 
