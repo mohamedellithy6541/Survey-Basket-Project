@@ -14,6 +14,7 @@ namespace SurveyBasket.Api.Controllers
         private readonly IMapper _mapper = mapper;
         #endregion
 
+        #region End Points
         [HttpGet("getAll")]
         public IActionResult GetAll()
         {
@@ -55,16 +56,11 @@ namespace SurveyBasket.Api.Controllers
 
             if (!isDeleted)
                 return NotFound();
-         
+
             return NoContent();
 
         }
 
-
-        [HttpPost("Test")]
-        public IActionResult Test([FromBody] Poll poll) 
-        {
-            return Ok("value Accepted");
-        }
+        #endregion
     }
 }
