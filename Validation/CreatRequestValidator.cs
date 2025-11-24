@@ -10,8 +10,6 @@ namespace SurveyBasket.Api.Validation
                 .NotEmpty().
                 MaximumLength(20)
                 .WithMessage(" {PropertyName} must be max Lenght is {MaxLength}  :( ");
-            ;
-
 
             RuleFor(x => x.Description)
                 .MaximumLength(20)
