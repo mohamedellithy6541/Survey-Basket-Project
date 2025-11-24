@@ -31,14 +31,14 @@ namespace SurveyBasket.Api.Controllers
             return response is null ? NotFound() : Ok(response);
         }
         [HttpPost]
-        public IActionResult Add(Poll poll)
+        public IActionResult Add(CreatePollRequest poll)
         {
             var addedpoll = _pollService.AddPoll(poll);
             return CreatedAtAction(nameof(Get), new { id = addedpoll.Id }, addedpoll);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] PollRequest request)
+        public IActionResult Update(int id, [FromBody] CreatePollRequest request)
         {
             var isUpdated = _pollService.Update(id, request.Adapt<Poll>());
 

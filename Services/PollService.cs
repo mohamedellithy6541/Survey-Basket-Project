@@ -21,7 +21,7 @@ namespace SurveyBasket.Api.Services
         ];
         private readonly IMapper _mapper;
 
-        public Poll AddPoll(Poll poll)
+        public Poll AddPoll(CreatePollRequest poll)
         {
             var mappingPoll = _mapper.Map<Poll>(poll);
             mappingPoll.Id = _polls.Count + 1;

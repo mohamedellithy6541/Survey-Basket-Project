@@ -4,7 +4,7 @@
     {
         IEnumerable<Poll?> GetAll();
         Poll GetById(int id );
-        Poll AddPoll(Poll request);
+        Poll AddPoll(CreatePollRequest request);
         bool Update(int id, Poll poll);
         bool Delete(int id);
 

@@ -1,6 +1,6 @@
 ﻿namespace SurveyBasket.Api.Contracts
 {
-    public record PollRequest(
+    public record CreatePollRequest(
         int Id,
         string? Title , 
         string? Description
