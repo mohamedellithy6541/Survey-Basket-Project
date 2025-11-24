@@ -1,4 +1,5 @@
 
+using SurveyBasket.Api;
 using System.Reflection;
 
 namespace SurveyBasket
@@ -9,21 +10,10 @@ namespace SurveyBasket
         {
             var builder = WebApplication.CreateBuilder(args);
             // Add services
-            builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            TypeAdapterConfig mappingConfiguration = TypeAdapterConfig.GlobalSettings;
-            mappingConfiguration.Scan(Assembly.GetExecutingAssembly());
-
-            builder.Services.AddSingleton<IMapper>(new Mapper(mappingConfiguration));
-
-            builder.Services.AddSingleton<IPollService, PollService>();
-
-            builder.Services.AddScoped<IValidator, CreatRequestValidator>();
-            builder.Services.
-             AddFluentValidationAutoValidation()
-             .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
-            builder.Services.AddSwaggerGen();
+           
+           
+            /// add All services 
+            builder.Services.AddDependancies();
 
             var app = builder.Build();
 
