@@ -8,12 +8,15 @@ namespace SurveyBasket.Api.Validation
         {
             RuleFor(x => x.Title)
                 .NotEmpty().
-                MaximumLength(20);
+                MaximumLength(20)
+                .WithMessage(" {PropertyName} must be max Lenght is {MaxLength}  :( ");
+            ;
+
 
             RuleFor(x => x.Description)
                 .MaximumLength(20)
                 .NotEmpty()
-                .WithMessage($" desc must be not null :( ");
+                .WithMessage(" {PropertyName} must be not null :( ");
         }
     }
 }
