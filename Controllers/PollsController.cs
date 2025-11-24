@@ -59,5 +59,12 @@ namespace SurveyBasket.Api.Controllers
             return NoContent();
 
         }
+
+
+        [HttpPost("Test")]
+        public IActionResult Test([FromBody] Poll poll) 
+        {
+            return Ok("value Accepted");
+        }
     }
 }
