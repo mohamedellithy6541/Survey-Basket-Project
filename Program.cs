@@ -1,6 +1,6 @@
-
+﻿using Microsoft.EntityFrameworkCore;
 using SurveyBasket.Api;
-using System.Reflection;
+using SurveyBasket.Api.Presistance;
 
 namespace SurveyBasket
 {
@@ -9,11 +9,18 @@ namespace SurveyBasket
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            
+
             /// add All services 
-            builder.Services.AddDependancies();
+            builder.Services.AddDependancies(builder.Configuration);
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+                db.Database.Migrate();   // يطبّق كل المايجريشنز غير المطبقة
+            }
+
 
             if (app.Environment.IsDevelopment())
             {

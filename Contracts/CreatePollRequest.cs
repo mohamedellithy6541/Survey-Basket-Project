@@ -1,9 +1,12 @@
 ﻿namespace SurveyBasket.Api.Contracts
 {
     public record CreatePollRequest(
-        int Id,
-        string? Title , 
-        string? Description
-    );
- 
+    string? Title,
+    string? Notes,
+    bool IsPublished,
+    DateOnly StartAt,
+    DateOnly EndAt,
+    DateOnly TimeToPlayTheGame 
+);
+
 }

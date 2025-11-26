@@ -1,58 +1,41 @@
 ﻿
 using MapsterMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using SurveyBasket.Api.Entities;
+using SurveyBasket.Api.Presistance;
 
 namespace SurveyBasket.Api.Services
 {
-    public class PollService : IPollService
+    public class PollService(IMapper mapper, ApplicationContext Context) : IPollService
     {
-        public PollService(IMapper mapper)
-        {
-            _mapper = mapper;
-        }
-        private readonly List<Poll> _polls =
-        [
-            new Poll()
-            {
-                Id = 1,
-                Title = "Mohamed",
-                Description = "software engineer :)"
-            }
-        ];
-        private readonly IMapper _mapper;
+        
+       
+        #region private Field
+        private readonly IMapper _mapper=mapper;
+        private readonly ApplicationContext _context=Context;
+        #endregion
 
-        public Poll AddPoll(CreatePollRequest poll)
+        public async Task<List<PollResponse>> GetAll()
         {
-            var mappingPoll = _mapper.Map<Poll>(poll);
-            mappingPoll.Id = _polls.Count + 1;
-            _polls.Add(mappingPoll);
-            return mappingPoll;
+            var polls = await _context.Polls
+                .AsNoTracking()
+                .ToListAsync();
+
+            var response = polls.Adapt<List<PollResponse>>();
+
+            return response;
         }
 
-        public bool Delete(int id)
+        public async Task<PollResponse> AddPoll(CreatePollRequest request)
         {
-            var currentPoll = GetById(id);
-
-            if (currentPoll is null) return false;
-
-            var deletedPoll = _polls.SingleOrDefault(x => x.Id == id);
-
-            return _polls.Remove(deletedPoll);
+            var poll = request.Adapt<Poll>();
+            await _context.Polls.AddAsync(poll);
+            await _context.SaveChangesAsync();
+            var pollResponse = request.Adapt<PollResponse>();
+            return pollResponse;
         }
 
-        public IEnumerable<Poll> GetAll() => _polls;
-        public Poll? GetById(int id) => _polls.SingleOrDefault(x => x.Id == id);
-
-        public bool Update(int id, Poll poll)
-        {
-            var currentpoll = GetById(id);
-            if (currentpoll is null)
-                return false;
-            currentpoll.Title = poll.Title;
-            currentpoll.Description = poll.Description;
-            return true;
-        }
-
-    
+     
     }
 }

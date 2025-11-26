@@ -15,52 +15,24 @@ namespace SurveyBasket.Api.Controllers
         #endregion
 
         #region End Points
-        [HttpGet("getAll")]
-        public IActionResult GetAll()
+
+        [HttpGet("polls")]
+        public async Task<ActionResult<List<PollResponse>>> GetAll()
         {
-            var polls = _pollService.GetAll();
-            var response = polls.Adapt<PollResponse>();
+            var polls = await _pollService.GetAll();
+            var response = polls.Adapt<List<PollResponse>>();
             return Ok(response);
         }
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
+
+        [HttpPost("Polls")]
+        public async Task<ActionResult<PollResponse>>Add([FromBody]CreatePollRequest poll)
         {
-            var poll = _pollService.GetById(id);
+            var addedpoll = await _pollService.AddPoll(poll);
 
-            var response = poll.Adapt<PollResponse>();
-
-            return response is null ? NotFound() : Ok(response);
-        }
-        [HttpPost]
-        public IActionResult Add(CreatePollRequest poll)
-        {
-            var addedpoll = _pollService.AddPoll(poll);
-            return CreatedAtAction(nameof(Get), new { id = addedpoll.Id }, addedpoll);
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] CreatePollRequest request)
-        {
-            var isUpdated = _pollService.Update(id, request.Adapt<Poll>());
-
-            if (!isUpdated) NotFound();
-
-            return NoContent();
-
-        }
-
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            var isDeleted = _pollService.Delete(id);
-
-            if (!isDeleted)
-                return NotFound();
-
-            return NoContent();
-
+            return Ok(addedpoll);
         }
 
         #endregion
     }
+
 }
