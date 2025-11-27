@@ -1,10 +1,4 @@
-﻿
-using MapsterMapper;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
-using SurveyBasket.Api.Entities;
-using SurveyBasket.Api.Presistance;
-using System.Threading;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace SurveyBasket.Api.Services
 {
@@ -65,13 +59,13 @@ namespace SurveyBasket.Api.Services
         public async Task<bool> Update(int id, PollRequest createPollRequest, CancellationToken cancellationToken)
         {
             if (id <= 0)
-              throw new ArgumentOutOfRangeException(nameof(id), "Id must be greater than zero.");
+                throw new ArgumentOutOfRangeException(nameof(id), "Id must be greater than zero.");
 
-            var poll = await _context.Polls.FindAsync(id,cancellationToken);
+            var poll = await _context.Polls.FindAsync(id, cancellationToken);
 
             if (poll is null) return false;
-           
-           var updatePoll= createPollRequest.Adapt(poll);
+
+            var updatePoll = createPollRequest.Adapt(poll);
 
             var updatedPoll = _context.Polls.Update(updatePoll);
             await _context.SaveChangesAsync(cancellationToken);
@@ -89,7 +83,7 @@ namespace SurveyBasket.Api.Services
 
             if (poll is null) return false;
 
-            poll.IsPublished =!poll.IsPublished;
+            poll.IsPublished = !poll.IsPublished;
             _context.Polls.Update(poll);
 
             await _context.SaveChangesAsync(cancellationToken);
