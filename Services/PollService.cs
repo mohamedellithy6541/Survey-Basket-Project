@@ -65,7 +65,7 @@ namespace SurveyBasket.Api.Services
         public async Task<bool> Update(int id, PollRequest createPollRequest, CancellationToken cancellationToken)
         {
             if (id <= 0)
-                throw new ArgumentOutOfRangeException(nameof(id), "Id must be greater than zero.");
+              throw new ArgumentOutOfRangeException(nameof(id), "Id must be greater than zero.");
 
             var poll = await _context.Polls.FindAsync(id,cancellationToken);
 
@@ -74,6 +74,24 @@ namespace SurveyBasket.Api.Services
            var updatePoll= createPollRequest.Adapt(poll);
 
             var updatedPoll = _context.Polls.Update(updatePoll);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return true;
+        }
+
+        public async Task<bool> ToggelPublish(int id, CancellationToken cancellationToken = default)
+        {
+            if (id <= 0)
+                throw new ArgumentOutOfRangeException(nameof(id), "Id must be greater than zero.");
+
+            var poll = await _context.Polls
+                      .FindAsync(id, cancellationToken);
+
+            if (poll is null) return false;
+
+            poll.IsPublished =!poll.IsPublished;
+            _context.Polls.Update(poll);
+
             await _context.SaveChangesAsync(cancellationToken);
 
             return true;

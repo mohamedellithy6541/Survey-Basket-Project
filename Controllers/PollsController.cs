@@ -60,6 +60,17 @@ namespace SurveyBasket.Api.Controllers
             return NoContent();
         }
 
+        [HttpPut("{Id}:int/toggleStatus")]
+        public async Task<IActionResult> ToggelPublish([FromRoute] int Id, CancellationToken cancellationToken)
+        {
+            var updated = await _pollService.ToggelPublish(Id, cancellationToken);
+
+            if (!updated)
+                return NotFound(); //404
+
+            return NoContent();
+        }
+
 
         #endregion
     }
