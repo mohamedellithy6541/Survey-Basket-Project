@@ -30,7 +30,7 @@ namespace SurveyBasket.Api.Services
         {
             var poll = request.Adapt<Poll>();
             await _context.Polls.AddAsync(poll, cancellationToken);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
             var pollResponse = request.Adapt<PollResponse>();
             return pollResponse;
         }
@@ -56,7 +56,7 @@ namespace SurveyBasket.Api.Services
 
             if (poll is null) return false;
             _context.Polls.Remove(poll);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return true;
 
@@ -74,7 +74,7 @@ namespace SurveyBasket.Api.Services
            var updatePoll= createPollRequest.Adapt(poll);
 
             var updatedPoll = _context.Polls.Update(updatePoll);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return true;
         }
