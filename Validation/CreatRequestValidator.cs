@@ -2,7 +2,7 @@
 
 namespace SurveyBasket.Api.Validation
 {
-    public class CreatRequestValidator : AbstractValidator<CreatePollRequest>
+    public class CreatRequestValidator : AbstractValidator<PollRequest>
     {
         public CreatRequestValidator()
         {
@@ -11,7 +11,7 @@ namespace SurveyBasket.Api.Validation
                 MinimumLength(5)
                 .WithMessage(" {PropertyName} must be Minimum Lenght is {MinLength}  :( ");
 
-            RuleFor(x => x.Notes)
+            RuleFor(x => x.Summery)
                 .MaximumLength(20)
                 .WithMessage(" {PropertyName} must be maximum Lenght is {MaxLength} (:")
                 .NotEmpty()

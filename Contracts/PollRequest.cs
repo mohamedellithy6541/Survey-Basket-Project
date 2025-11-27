@@ -1,8 +1,8 @@
 ﻿namespace SurveyBasket.Api.Contracts
 {
-    public record CreatePollRequest(
+    public record PollRequest(
     string? Title,
-    string? Notes,
+    string? Summery,
     bool IsPublished,
     DateOnly StartAt,
     DateOnly EndAt,

@@ -6,9 +6,8 @@ namespace SurveyBasket.Api.Mapping
     {
         public void Register(TypeAdapterConfig config)
         {
-
-            config.NewConfig<Poll, PollResponse>().Map(x=>x.Notes,s=>s.Summery);
-            config.NewConfig<Poll, CreatePollRequest>().Map(x => x.Notes, s => s.Summery);
+            config.NewConfig<Poll, PollResponse>().Map(d=>d.Notes,s=>s.Summery).TwoWays();
+            config.NewConfig<Poll, PollRequest>().TwoWays(); 
         }
     }
 }
