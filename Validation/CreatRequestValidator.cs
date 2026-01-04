@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using SurveyBasket.Api.Contracts.Poll.Request;
 
 namespace SurveyBasket.Api.Validation
 {

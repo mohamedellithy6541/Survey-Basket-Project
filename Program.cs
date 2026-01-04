@@ -10,7 +10,6 @@ namespace SurveyBasket
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            /// add All services 
             builder.Services.AddDependancies(builder.Configuration);
 
             var app = builder.Build();
@@ -18,7 +17,7 @@ namespace SurveyBasket
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-                db.Database.Migrate();   // يطبّق كل المايجريشنز غير المطبقة
+                db.Database.Migrate();  
             }
 
 

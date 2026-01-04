@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SurveyBasket.Api.Contracts.Poll.Request;
+using SurveyBasket.Api.Contracts.Poll.Response;
 
 namespace SurveyBasket.Api.Services
 {
