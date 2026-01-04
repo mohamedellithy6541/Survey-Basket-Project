@@ -26,14 +26,15 @@ namespace SurveyBasket.Api.Authentication
             // ExpiresIN
             var expiresIn = 30;
             var expiresInDate = DateTime.UtcNow.AddMinutes(expiresIn);
-           // token 
-            var token = new JwtSecurityToken(
+            // token 
+            var token = new JwtSecurityToken
+             (
                 issuer: "SurvayBasketApp",
                 audience: "SurvayBasketApp Users",
                 claims: claims,
                 expires: expiresInDate,
                 signingCredentials: singinngCredentials
-                );
+             );
 
             return (token: new JwtSecurityTokenHandler().WriteToken(token), expiresIn: expiresIn);
         }
