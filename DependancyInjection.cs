@@ -85,8 +85,5 @@ namespace SurveyBasket.Api
             });
             return services;
         }
-
-
-
     }
 }
