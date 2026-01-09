@@ -1,89 +1,101 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Components.Web;
+﻿using MapsterMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
-using SurveyBasket.Api.Authentication;
-using SurveyBasket.Api.Presistance;
+using SurveyBasket.Authentication;
 using System.Reflection;
 using System.Text;
-namespace SurveyBasket.Api
+
+namespace SurveyBasket;
+
+public static class DependencyInjection
 {
-    public static class DependancyInjection
+    public static IServiceCollection AddDependencies(this IServiceCollection services,
+        IConfiguration configuration)
     {
-        public static IServiceCollection AddDependancies(this IServiceCollection services, IConfiguration configuration)
-        {
-            // mean using api
-            services.AddControllers();
-            services.AddEndpointsApiExplorer();
-            services.AddFluentValidationsDependancies();
-            services.AddMappingDependancies();
-            services.AddservicesDependancies();
-            services.AddDatabaseDependancies(configuration);
-            services.AddAuthDependancies(configuration);
+        services.AddControllers();
 
-            services.AddSwaggerGen();
-            return services;
-        }
-        public static IServiceCollection AddFluentValidationsDependancies(this IServiceCollection services)
-        {
-            //add fluent validations 
-            services.AddScoped<IValidator, CreatRequestValidator>();
-            services.AddFluentValidationAutoValidation()
-             .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            return services;
-        }
-        public static IServiceCollection AddMappingDependancies(this IServiceCollection services)
-        {
-            /// add mapster 
-            TypeAdapterConfig mappingConfiguration = TypeAdapterConfig.GlobalSettings;
-            mappingConfiguration.Scan(Assembly.GetExecutingAssembly());
-            services.AddSingleton<IMapper>(new Mapper(mappingConfiguration));
-            return services;
-        }
-        public static IServiceCollection AddservicesDependancies(this IServiceCollection services)
-        {
-            // add services 
-            services.AddScoped<IPollService, PollService>();
+        services.AddAuthConfig(configuration);
 
-            return services;
-        }
-        public static IServiceCollection AddDatabaseDependancies(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddDbContext<ApplicationContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("conf")));
+        var connectionString = configuration.GetConnectionString("DefaultConnection") ??
+            throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-            return services;
-        }
-        public static IServiceCollection AddAuthDependancies(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddSingleton<IJwtProvider, JwtProvider>();
-            services.AddIdentity<ApplicationBase, IdentityRole>().AddEntityFrameworkStores<ApplicationContext>();
-            services.AddScoped<IAuthService, AuthService>();
+        services.AddDbContext<ApplicationContext>(options =>
+            options.UseSqlServer(connectionString));
 
-            services.AddAuthentication(option =>
+        services
+            .AddSwaggerServices()
+            .AddMapsterConfig()
+            .AddFluentValidationConfig();
+
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IPollService, PollService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddSwaggerServices(this IServiceCollection services)
+    {
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
+        return services;
+    }
+
+    private static IServiceCollection AddMapsterConfig(this IServiceCollection services)
+    {
+        var mappingConfig = TypeAdapterConfig.GlobalSettings;
+        mappingConfig.Scan(Assembly.GetExecutingAssembly());
+
+        services.AddSingleton<IMapper>(new Mapper(mappingConfig));
+
+        return services;
+    }
+
+    private static IServiceCollection AddFluentValidationConfig(this IServiceCollection services)
+    {
+        services
+            .AddFluentValidationAutoValidation()
+            .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+        return services;
+    }
+
+    private static IServiceCollection AddAuthConfig(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddIdentity<ApplicationUser, IdentityRole>()
+          .AddEntityFrameworkStores<ApplicationContext>();
+
+
+        services.AddSingleton<IJwtProvider, JwtProvider>();
+
+        services.AddOptions<JwtOptions>()
+            .BindConfiguration(JwtOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        var jwtSettings = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
+        
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(o =>
+        {
+            o.SaveToken = true;
+            o.TokenValidationParameters = new TokenValidationParameters
             {
-                /// that to attribute auth knew that using Bearer 
-                option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(o =>
-            {
-                o.SaveToken = true;
-                o.TokenValidationParameters = new TokenValidationParameters
-                {
-                    // that mean singinng key compare 
-                    ValidateIssuerSigningKey = true,
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("f844c97f267ceb6e94eed9afb8124e2e1c3f56ee294fcf5e7b8faa6849f3b707")),
-                    ValidIssuer = "SurvayBasketApp",
-                    ValidAudience = "SurvayBasketApp Users"
-                };
-            });
-            return services;
-        }
+                ValidateIssuerSigningKey = true,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings?.Key!)),
+                ValidIssuer = jwtSettings?.Issuer,
+                ValidAudience = jwtSettings?.Audience
+            };
+        });
+
+        return services;
     }
 }

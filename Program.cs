@@ -10,7 +10,7 @@ namespace SurveyBasket
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDependancies(builder.Configuration);
+            builder.Services.AddDependencies(builder.Configuration);
 
             var app = builder.Build();
 
@@ -19,8 +19,6 @@ namespace SurveyBasket
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
                 db.Database.Migrate();  
             }
-
-
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -28,7 +26,6 @@ namespace SurveyBasket
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "V1"));
 
             }
-
             app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();
